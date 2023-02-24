@@ -87,13 +87,13 @@
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
+                        Score++;
                         CurrentFigureRow++;
                     }
                 }
                 //change game state
                 if (Frame % FramesPerSecond == 0)
                 {
-                    Score++;
                     Frame = 1;
                     CurrentFigureRow++;
                 }
@@ -104,7 +104,6 @@
                 Thread.Sleep(40);
                 
             }
-
 
         }
 
