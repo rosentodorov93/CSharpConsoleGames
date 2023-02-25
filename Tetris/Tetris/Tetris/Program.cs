@@ -51,9 +51,10 @@
         static int Frame = 0;
         static int FramesPerSecond = 15;
         static int Score = 0;
-        static int CurrentFigureIndex = 2;
+        static bool[,] CurrentFigure = null;
         static int CurrentFigureRow = 0;
         static int CurrentFigureCol = 0;
+        static Random Random = new Random();
 
 
         static void Main(string[] args)
@@ -64,6 +65,7 @@
             Console.BufferHeight = GameRows + 1;
             Console.BufferWidth = GameCols + 1;
             Console.CursorVisible = false;
+            CurrentFigure = TerisFigures[Random.Next(0,TerisFigures.Count - 1)];
             DrawBorder();
             while (true)
             {
@@ -79,11 +81,17 @@
                     }
                     if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
                     {
-                        CurrentFigureCol++;
+                        if (CurrentFigureCol + CurrentFigure.GetLength(1) < TetrisCols)
+                        {
+                            CurrentFigureCol++;
+                        }
                     }
                     if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow)
                     {
-                        CurrentFigureCol--;
+                        if (CurrentFigureCol > 0)
+                        {
+                            CurrentFigureCol--;
+                        }
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
@@ -109,13 +117,13 @@
 
         private static void DrawCurrentFigure()
         {
-            var currentFigure = TerisFigures[CurrentFigureIndex];
 
-            for (int r = 0; r < currentFigure.GetLength(0); r++)
+
+            for (int r = 0; r < CurrentFigure.GetLength(0); r++)
             {
-                for (int c = 0; c < currentFigure.GetLength(1); c++)
+                for (int c = 0; c < CurrentFigure.GetLength(1); c++)
                 {
-                    if (currentFigure[r,c])
+                    if (CurrentFigure[r,c])
                     {
                         Draw("*", r + CurrentFigureRow + 1, c + CurrentFigureCol + 1, ConsoleColor.Yellow);
                     }
