@@ -96,8 +96,10 @@
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
                         Score++;
+                        Frame = 1;
                         CurrentFigureRow++;
                     }
+                    // Add 90 degree figure rotation 
                 }
                 //change game state
                 if (Frame % FramesPerSecond == 0)
@@ -105,6 +107,15 @@
                     Frame = 1;
                     CurrentFigureRow++;
                 }
+                // if(Collision())
+                // {
+                //   AddCurrentFigureToTetrisFiels();
+                //   CheckForFullLines();
+                //   ResetFigure();
+                //   Check for Collision with new figure(game over) -> save score
+                //
+                // }
+
                 //redraw UI
                 DrawBorder();
                 DrawGameInfo();
@@ -117,8 +128,6 @@
 
         private static void DrawCurrentFigure()
         {
-
-
             for (int r = 0; r < CurrentFigure.GetLength(0); r++)
             {
                 for (int c = 0; c < CurrentFigure.GetLength(1); c++)
