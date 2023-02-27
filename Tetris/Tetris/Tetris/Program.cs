@@ -8,7 +8,7 @@
         static int InfoCols = 10;
         static int GameRows = TetrisRows + 2;
         static int GameCols = TetrisCols + InfoCols + 3;
-        static bool[,] TetrisField = new bool[TetrisRows,TetrisCols];
+        static bool[,] TetrisField = new bool[TetrisRows, TetrisCols];
         static List<bool[,]> TetrisFigures = new List<bool[,]>()
         {
             new bool[,]
@@ -66,7 +66,7 @@
             Console.BufferHeight = GameRows + 1;
             Console.BufferWidth = GameCols + 1;
             Console.CursorVisible = false;
-            CurrentFigure = TetrisFigures[Random.Next(0,TetrisFigures.Count - 1)];
+            CurrentFigure = TetrisFigures[Random.Next(0, TetrisFigures.Count - 1)];
 
             while (true)
             {
@@ -100,7 +100,25 @@
                         Frame = 1;
                         CurrentFigureRow++;
                     }
-                    // Add 90 degree figure rotation 
+                    if (key.Key == ConsoleKey.Spacebar)
+                    {
+                        var rotatedFigure = new bool[CurrentFigure.GetLength(1), CurrentFigure.GetLength(0)];
+
+                        for (int row = 0; row < CurrentFigure.GetLength(0); row++)
+                        {
+                            for (int col = 0; col < CurrentFigure.GetLength(1); col++)
+                            {
+                                rotatedFigure[col,CurrentFigure.GetLength(0) - row - 1] = CurrentFigure[row , col]; 
+                            }
+                        }
+
+                        int rightBorder = rotatedFigure.GetLength(1) + CurrentFigureCol;
+                        if (rightBorder >= TetrisCols)
+                        {
+                            CurrentFigureCol -= rightBorder - TetrisCols;
+                        }
+                        CurrentFigure = rotatedFigure;
+                    }
                 }
                 //change game state
                 if (Frame % FramesPerSecond == 0)
@@ -108,11 +126,11 @@
                     Frame = 1;
                     CurrentFigureRow++;
                 }
-                 if(Collision())
-                 {
+                if (Collision())
+                {
                     AddCurrentFigureToTetrisFiels();
-                //   CheckForFullLines();
-                     ResetFigure();
+                    int lines = CheckForFullLines();
+                    ResetFigure();
                     if (Collision())
                     {
                         GameOver();
@@ -127,9 +145,41 @@
                 DrawTerrisField();
 
                 Thread.Sleep(40);
-                
+
             }
 
+        }
+
+        private static int CheckForFullLines()
+        {
+            int linesCount = 0;
+
+            for (int row = 0; row < TetrisField.GetLength(0); row++)
+            {
+                bool isFullLine = true;
+                for (int col = 0; col < TetrisField.GetLength(1); col++)
+                {
+                    if (TetrisField[row,col] == false)
+                    {
+                        isFullLine = false;
+                    }
+                }
+
+                if (isFullLine)
+                {
+                    linesCount++;
+
+                    for (int r = row; r >= 1; r--)
+                    {
+                        for (int c = 0; c < TetrisField.GetLength(1); c++)
+                        {
+                            TetrisField[r, c] = TetrisField[r - 1, c];
+                        }
+                    }
+                }
+            }
+
+            return linesCount;
         }
 
         private static void GameOver()
@@ -163,7 +213,7 @@
             {
                 for (int col = 0; col < TetrisField.GetLongLength(1); col++)
                 {
-                    if (TetrisField[row,col])
+                    if (TetrisField[row, col])
                     {
                         Draw("*", row + 1, col + 1);
                     }
@@ -177,7 +227,7 @@
             {
                 for (int col = 0; col < CurrentFigure.GetLongLength(1); col++)
                 {
-                    if (CurrentFigure[row,col])
+                    if (CurrentFigure[row, col])
                     {
                         TetrisField[row + CurrentFigureRow, col + CurrentFigureCol] = true;
                     }
@@ -196,7 +246,7 @@
                 bool hasCollision = false;
                 for (int col = 0; col < CurrentFigure.GetLength(1); col++)
                 {
-                    if (CurrentFigure[row,col])
+                    if (CurrentFigure[row, col])
                     {
                         hasCollision = TetrisField[CurrentFigureRow + row + 1, CurrentFigureCol + col];
                     }
@@ -216,7 +266,7 @@
             {
                 for (int c = 0; c < CurrentFigure.GetLength(1); c++)
                 {
-                    if (CurrentFigure[r,c])
+                    if (CurrentFigure[r, c])
                     {
                         Draw("*", r + CurrentFigureRow + 1, c + CurrentFigureCol + 1, ConsoleColor.Yellow);
                     }
@@ -236,7 +286,7 @@
 
         private static void DrawBorder()
         {
-            Console.SetCursorPosition(0,0);
+            Console.SetCursorPosition(0, 0);
 
             string startLine = "╔";
             startLine += new string('═', TetrisCols);
