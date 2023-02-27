@@ -67,7 +67,7 @@
             Console.BufferWidth = GameCols + 1;
             Console.CursorVisible = false;
             CurrentFigure = TetrisFigures[Random.Next(0,TetrisFigures.Count - 1)];
-            DrawBorder();
+
             while (true)
             {
                 Frame++;
@@ -110,23 +110,43 @@
                 }
                  if(Collision())
                  {
-                    Score++;
                     AddCurrentFigureToTetrisFiels();
                 //   CheckForFullLines();
                      ResetFigure();
-                //   Check for Collision with new figure(game over) -> save score
-                //
-                 }
+                    if (Collision())
+                    {
+                        GameOver();
+                    }
+
+                }
 
                 //redraw UI
                 DrawBorder();
                 DrawGameInfo();
                 DrawCurrentFigure();
                 DrawTerrisField();
+
                 Thread.Sleep(40);
                 
             }
 
+        }
+
+        private static void GameOver()
+        {
+            string line = $"[{DateTime.UtcNow.ToString()}] {Environment.UserName} -> {Score.ToString()}";
+            File.AppendAllLines("score.txt", new List<string> { line });
+            string scoreLine = $"    {Score.ToString()}";
+            scoreLine += new string(' ', 15 - scoreLine.Length);
+
+            Draw("________________", 7, 3);
+            Draw("|  Game Over!   |", 8, 3);
+            Draw("|     Score:    |", 9, 3);
+            Draw($"|{scoreLine}|", 10, 3);
+            Draw("________________", 11, 3);
+
+            Thread.Sleep(10000);
+            Environment.Exit(0);
         }
 
         private static void ResetFigure()
@@ -170,6 +190,21 @@
             if (CurrentFigureRow + CurrentFigure.GetLength(0) >= TetrisRows)
             {
                 return true;
+            }
+            for (int row = 0; row < CurrentFigure.GetLength(0); row++)
+            {
+                bool hasCollision = false;
+                for (int col = 0; col < CurrentFigure.GetLength(1); col++)
+                {
+                    if (CurrentFigure[row,col])
+                    {
+                        hasCollision = TetrisField[CurrentFigureRow + row + 1, CurrentFigureCol + col];
+                    }
+                    if (hasCollision)
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;
