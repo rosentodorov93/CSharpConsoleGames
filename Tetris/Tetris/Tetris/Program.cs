@@ -4,7 +4,7 @@ namespace Tetris
 {
     internal class Program
     {
-        //settings
+
         static int TetrisRows = 20;
         static int TetrisCols = 10;
         static int InfoCols = 10;
@@ -49,10 +49,10 @@ namespace Tetris
             }
         };
         static int LinesToLevel = 3;
-        static int[] ScorePerLine = { 0, 40, 100,300, 1200 };
+        static int[] ScorePerLine = { 0, 40, 100, 300, 1200 };
 
 
-        //game state
+
         static int Frame = 0;
         static int FramesPerSecond = 16;
         static int Score = 0;
@@ -75,7 +75,7 @@ namespace Tetris
             Console.CursorVisible = false;
             CurrentFigure = TetrisFigures[Random.Next(0, TetrisFigures.Count - 1)];
             HighScore = GetHighScore();
-            
+
             while (true)
             {
                 Frame++;
@@ -95,7 +95,7 @@ namespace Tetris
                     if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
                     {
                         if (CurrentFigureCol + CurrentFigure.GetLength(1) < TetrisCols
-                            && TetrisField[CurrentFigureRow,CurrentFigureCol + CurrentFigure.GetLength(1)] == false)
+                            && TetrisField[CurrentFigureRow, CurrentFigureCol + CurrentFigure.GetLength(1)] == false)
                         {
                             CurrentFigureCol++;
                         }
@@ -189,7 +189,7 @@ namespace Tetris
             }
 
             int rightBorder = rotatedFigure.GetLength(1) + CurrentFigureCol;
-            if (rightBorder >= TetrisCols || TetrisField[CurrentFigureRow,rightBorder])
+            if (rightBorder >= TetrisCols || TetrisField[CurrentFigureRow, rightBorder])
             {
                 CurrentFigureCol -= rotatedFigure.GetLength(1);
             }
@@ -206,7 +206,7 @@ namespace Tetris
                 bool isFullLine = true;
                 for (int col = 0; col < TetrisField.GetLength(1); col++)
                 {
-                    if (TetrisField[row,col] == false)
+                    if (TetrisField[row, col] == false)
                     {
                         isFullLine = false;
                     }
@@ -248,8 +248,7 @@ namespace Tetris
 
         private static void ResetFigure()
         {
-            //Random.Next(0, TetrisFigures.Count)
-            var figure = TetrisFigures[0];
+            var figure = TetrisFigures[Random.Next(0, TetrisFigures.Count)];
             CurrentFigureRow = 0;
             CurrentFigureCol = 0;
             CurrentFigure = figure;
@@ -324,17 +323,15 @@ namespace Tetris
 
         private static void DrawGameInfo()
         {
-            Draw("Score:", 2, TetrisCols + 2, ConsoleColor.DarkCyan);
-            Draw(Score.ToString(), 3, TetrisCols + 2, ConsoleColor.DarkCyan);
+            Draw("Score:", 2, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(Score.ToString(), 3, TetrisCols + 3, ConsoleColor.DarkCyan);
 
-            Draw("Best:", 4, TetrisCols + 2, ConsoleColor.DarkCyan);
-            Draw(HighScore.ToString(), 5, TetrisCols + 2, ConsoleColor.DarkCyan);
+            Draw("Best:", 5, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(HighScore.ToString(), 6, TetrisCols + 3, ConsoleColor.DarkCyan);
 
-            Draw("Level:", 6, TetrisCols + 2, ConsoleColor.DarkCyan);
-            Draw(Level.ToString(), 7, TetrisCols + 2, ConsoleColor.DarkCyan);
+            Draw("Level:", 8, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(Level.ToString(), 9, TetrisCols + 3, ConsoleColor.DarkCyan);
 
-            Draw("FrameToMove:", 8, TetrisCols + 2, ConsoleColor.DarkCyan);
-            Draw(FramesPerSecond.ToString(), 9, TetrisCols + 2, ConsoleColor.DarkCyan);
 
         }
 
