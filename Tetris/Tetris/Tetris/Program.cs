@@ -94,18 +94,19 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
                     {
-                        if (CurrentFigureCol + CurrentFigure.GetLength(1) < TetrisCols
-                            && TetrisField[CurrentFigureRow, CurrentFigureCol + CurrentFigure.GetLength(1)] == false)
+                        if (CanMoveRight())
                         {
                             CurrentFigureCol++;
                         }
+                        
                     }
                     if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow)
                     {
-                        if (CurrentFigureCol > 0 && TetrisField[CurrentFigureRow, CurrentFigureCol - 1] == false)
+                        if (CanMoveLeft())
                         {
                             CurrentFigureCol--;
                         }
+                        
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
@@ -157,6 +158,43 @@ namespace Tetris
 
             }
 
+        }
+
+        private static bool CanMoveRight()
+        {
+            if (CurrentFigureCol + CurrentFigure.GetLength(1) == TetrisCols)
+            {
+                return false;
+            }
+
+            for (int rightSide = 0; rightSide < CurrentFigure.GetLength(0); rightSide++)
+            {
+                if (CurrentFigure[rightSide,CurrentFigure.GetLength(1) - 1] 
+                    && TetrisField[CurrentFigureRow + rightSide, CurrentFigureCol + CurrentFigure.GetLength(1)])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool CanMoveLeft()
+        {
+            if (CurrentFigureCol == 0)
+            {
+                return false;
+            }
+
+            for (int leftSide = 0; leftSide < CurrentFigure.GetLength(0); leftSide++)
+            {
+                if (CurrentFigure[leftSide,0] && TetrisField[CurrentFigureRow + leftSide,CurrentFigureCol - 1])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static int GetHighScore()
