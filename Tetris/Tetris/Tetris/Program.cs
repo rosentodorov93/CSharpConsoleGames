@@ -94,19 +94,19 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
                     {
-                        if (CanMoveRight())
+                        if (IsSave(CurrentFigure, CurrentFigureRow, CurrentFigureCol + 1))
                         {
                             CurrentFigureCol++;
                         }
-                        
+
                     }
                     if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow)
                     {
-                        if (CanMoveLeft())
+                        if (IsSave(CurrentFigure, CurrentFigureRow, CurrentFigureCol - 1))
                         {
                             CurrentFigureCol--;
                         }
-                        
+
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
@@ -119,7 +119,7 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.Spacebar)
                     {
-                        RotateFigure();
+                       CurrentFigure = RotateFigure(CurrentFigure);
                     }
                 }
 
@@ -160,43 +160,6 @@ namespace Tetris
 
         }
 
-        private static bool CanMoveRight()
-        {
-            if (CurrentFigureCol + CurrentFigure.GetLength(1) == TetrisCols)
-            {
-                return false;
-            }
-
-            for (int rightSide = 0; rightSide < CurrentFigure.GetLength(0); rightSide++)
-            {
-                if (CurrentFigure[rightSide,CurrentFigure.GetLength(1) - 1] 
-                    && TetrisField[CurrentFigureRow + rightSide, CurrentFigureCol + CurrentFigure.GetLength(1)])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static bool CanMoveLeft()
-        {
-            if (CurrentFigureCol == 0)
-            {
-                return false;
-            }
-
-            for (int leftSide = 0; leftSide < CurrentFigure.GetLength(0); leftSide++)
-            {
-                if (CurrentFigure[leftSide,0] && TetrisField[CurrentFigureRow + leftSide,CurrentFigureCol - 1])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private static int GetHighScore()
         {
             int score = 0;
@@ -214,25 +177,58 @@ namespace Tetris
             return score;
         }
 
-        private static void RotateFigure()
+        private static bool[,] RotateFigure(bool[,] currentFigure)
         {
-            var rotatedFigure = new bool[CurrentFigure.GetLength(1), CurrentFigure.GetLength(0)];
+            var rotatedFigure = new bool[currentFigure.GetLength(1), currentFigure.GetLength(0)];
 
-            for (int row = 0; row < CurrentFigure.GetLength(0); row++)
+            for (int row = 0; row < currentFigure.GetLength(0); row++)
             {
                 for (int col = 0; col < CurrentFigure.GetLength(1); col++)
                 {
-                    rotatedFigure[col, CurrentFigure.GetLength(0) - row - 1] = CurrentFigure[row, col];
+                    rotatedFigure[col, currentFigure.GetLength(0) - row - 1] = currentFigure[row, col];
                 }
             }
 
             int rightBorder = rotatedFigure.GetLength(1) + CurrentFigureCol;
-            if (rightBorder >= TetrisCols || TetrisField[CurrentFigureRow, rightBorder])
+            if (rightBorder > TetrisCols)
             {
-                CurrentFigureCol -= rotatedFigure.GetLength(1);
+                
+                CurrentFigureCol -= rightBorder - TetrisCols;
+
+
             }
 
-            CurrentFigure = rotatedFigure;
+            if (IsSave(rotatedFigure, CurrentFigureRow, CurrentFigureCol))
+            {
+                return rotatedFigure;
+
+            }
+            return currentFigure;
+        }
+
+        private static bool IsSave(bool[,] figure, int row, int col)
+        {
+            if (col < 0)
+            {
+                return false;
+            }
+            if (col + figure.GetLength(1) > TetrisCols)
+            {
+                return false;
+            }
+
+            for (int r = 0; r < figure.GetLength(0); r++)
+            {
+                for (int c = 0; c < figure.GetLength(1); c++)
+                {
+                    if (figure[r, c] && TetrisField[row + r, col + c])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private static int CheckForFullLines()
