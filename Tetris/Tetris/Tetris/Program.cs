@@ -67,6 +67,8 @@ namespace Tetris
 
         static void Main(string[] args)
         {
+            var musicPlayer = new MusicPlayer();
+            musicPlayer.PlayMusic();
             Console.Title = "Tetris-v1.0";
             Console.WindowHeight = GameRows + 1;
             Console.WindowWidth = GameCols + 1;
@@ -75,10 +77,6 @@ namespace Tetris
             Console.CursorVisible = false;
             CurrentFigure = TetrisFigures[Random.Next(0, TetrisFigures.Count - 1)];
             HighScore = GetHighScore();
-
-            Thread music = new Thread(() => PlaySound());
-            music.Start();
-                
 
             while (true)
             {
@@ -409,128 +407,6 @@ namespace Tetris
             Console.Write(symbol);
             Console.ResetColor();
         }
-        private static void PlaySound()
-        {
-            
-            while (true)
-            {
-                const int soundLenght = 100;
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1320, soundLenght);
-                Console.Beep(1188, soundLenght);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 6);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1056, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Thread.Sleep(soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1408, soundLenght * 2);
-                Console.Beep(1760, soundLenght * 4);
-                Console.Beep(1584, soundLenght * 2);
-                Console.Beep(1408, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 6);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 4);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1056, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Thread.Sleep(soundLenght * 4);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1320, soundLenght);
-                Console.Beep(1188, soundLenght);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 6);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1056, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Thread.Sleep(soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1408, soundLenght * 2);
-                Console.Beep(1760, soundLenght * 4);
-                Console.Beep(1584, soundLenght * 2);
-                Console.Beep(1408, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 6);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1188, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(990, soundLenght * 4);
-                Console.Beep(990, soundLenght * 2);
-                Console.Beep(1056, soundLenght * 2);
-                Console.Beep(1188, soundLenght * 4);
-                Console.Beep(1320, soundLenght * 4);
-                Console.Beep(1056, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Console.Beep(880, soundLenght * 4);
-                Thread.Sleep(soundLenght * 4);
-                Console.Beep(660, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(594, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(440, soundLenght * 8);
-                Console.Beep(419, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(660, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(594, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(528, soundLenght * 4);
-                Console.Beep(660, soundLenght * 4);
-                Console.Beep(880, soundLenght * 8);
-                Console.Beep(838, soundLenght * 16);
-                Console.Beep(660, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(594, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(440, soundLenght * 8);
-                Console.Beep(419, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(660, soundLenght * 8);
-                Console.Beep(528, soundLenght * 8);
-                Console.Beep(594, soundLenght * 8);
-                Console.Beep(495, soundLenght * 8);
-                Console.Beep(528, soundLenght * 4);
-                Console.Beep(660, soundLenght * 4);
-                Console.Beep(880, soundLenght * 8);
-                Console.Beep(838, soundLenght * 16);
-            }
-
-        }
+        
     }
 }
