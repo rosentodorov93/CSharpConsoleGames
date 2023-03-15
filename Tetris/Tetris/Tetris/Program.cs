@@ -49,7 +49,7 @@ namespace Tetris
             }
         };
         static int LinesToLevel = 3;
-        static int[] ScorePerLine = { 0, 40, 100, 300, 1200 };
+        
 
 
 
@@ -68,7 +68,8 @@ namespace Tetris
         static void Main(string[] args)
         {
             var musicPlayer = new MusicPlayer();
-            musicPlayer.PlayMusic();
+            var scoreMenager = new ScoreMenager("score.txt");
+            //musicPlayer.PlayMusic();
             Console.Title = "Tetris-v1.0";
             Console.WindowHeight = GameRows + 1;
             Console.WindowWidth = GameCols + 1;
@@ -76,15 +77,11 @@ namespace Tetris
             Console.BufferWidth = GameCols + 1;
             Console.CursorVisible = false;
             CurrentFigure = TetrisFigures[Random.Next(0, TetrisFigures.Count - 1)];
-            HighScore = GetHighScore();
+            
 
             while (true)
             {
                 Frame++;
-                if (Score > HighScore)
-                {
-                    HighScore = Score;
-                }
 
                 if (Console.KeyAvailable)
                 {
@@ -114,7 +111,7 @@ namespace Tetris
                     {
                         if (CurrentFigureRow + CurrentFigure.GetLength(0) < TetrisRows - 1)
                         {
-                            Score += Level;
+                            scoreMenager.AddScore(0);
                             Frame = 1;
                             CurrentFigureRow++;
                         }
@@ -134,7 +131,7 @@ namespace Tetris
                 {
                     AddCurrentFigureToTetrisFiels();
                     int lines = CheckForFullLines();
-                    Score += ScorePerLine[lines];
+                    scoreMenager.AddScore(lines);
                     LinesCleared += lines;
                     if (LinesCleared >= LinesToLevel)
                     {
@@ -145,14 +142,14 @@ namespace Tetris
                     ResetFigure();
                     if (Collision())
                     {
-                        GameOver();
+                        GameOver(scoreMenager);
                     }
 
                 }
 
 
                 DrawBorder();
-                DrawGameInfo();
+                DrawGameInfo(scoreMenager.Score, scoreMenager.HighScore);
                 DrawCurrentFigure();
                 DrawTerrisField();
 
@@ -162,22 +159,7 @@ namespace Tetris
 
         }
 
-        private static int GetHighScore()
-        {
-            int score = 0;
-            if (File.Exists("score.txt"))
-            {
-                string[] lines = File.ReadAllLines("score.txt");
-
-                foreach (var line in lines)
-                {
-                    var currentScore = int.Parse(Regex.Match(line, @"-> ([0-9]+)").Groups[1].Value);
-                    score = Math.Max(score, currentScore);
-                }
-            }
-
-            return score;
-        }
+        
 
         private static bool[,] RotateFigure(bool[,] currentFigure)
         {
@@ -265,11 +247,11 @@ namespace Tetris
             return linesCount;
         }
 
-        private static void GameOver()
+        private static void GameOver(ScoreMenager scoreMenager)
         {
-            string line = $"[{DateTime.UtcNow.ToString()}] {Environment.UserName} -> {Score.ToString()}";
-            File.AppendAllLines("score.txt", new List<string> { line });
-            string scoreLine = $"    {Score.ToString()}";
+
+            scoreMenager.AddHighScore();
+            string scoreLine = $"    {scoreMenager.Score.ToString()}";
             scoreLine += new string(' ', 15 - scoreLine.Length);
 
             Draw("________________", 7, 3);
@@ -357,13 +339,13 @@ namespace Tetris
             }
         }
 
-        private static void DrawGameInfo()
+        private static void DrawGameInfo(int score, int highScore)
         {
             Draw("Score:", 2, TetrisCols + 3, ConsoleColor.DarkCyan);
-            Draw(Score.ToString(), 3, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(score.ToString(), 3, TetrisCols + 3, ConsoleColor.DarkCyan);
 
             Draw("Best:", 5, TetrisCols + 3, ConsoleColor.DarkCyan);
-            Draw(HighScore.ToString(), 6, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(highScore.ToString(), 6, TetrisCols + 3, ConsoleColor.DarkCyan);
 
             Draw("Level:", 8, TetrisCols + 3, ConsoleColor.DarkCyan);
             Draw(Level.ToString(), 9, TetrisCols + 3, ConsoleColor.DarkCyan);
