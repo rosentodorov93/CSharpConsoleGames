@@ -10,65 +10,14 @@ namespace Tetris
         static int InfoCols = 10;
         static int GameRows = TetrisRows + 2;
         static int GameCols = TetrisCols + InfoCols + 3;
-        static bool[,] TetrisField = new bool[TetrisRows, TetrisCols];
-        static List<bool[,]> TetrisFigures = new List<bool[,]>()
-        {
-            new bool[,]
-            {
-                {true, true,true,true}
-            },
-            new bool[,]
-            {
-                {true, true,},
-                {true, true,}
-            },
-            new bool[,]
-            {
-                {false, true,false},
-                {true, true,true}
-            },
-            new bool[,]
-            {
-                {true, true,false},
-                {false, true,true}
-            },
-            new bool[,]
-            {
-                {false, true,true},
-                {true, true,false}
-            },
-            new bool[,]
-            {
-                {true, false,false},
-                {true, true,true}
-            },
-            new bool[,]
-            {
-                {false, false,true},
-                {true, true,true}
-            }
-        };
-        static int LinesToLevel = 3;
         
-
-
-
-        static int Frame = 0;
-        static int FramesPerSecond = 16;
-        static int Score = 0;
-        static int HighScore;
-        static int LinesCleared = 0;
-        static int Level = 1;
-        static bool[,] CurrentFigure = null;
-        static int CurrentFigureRow = 0;
-        static int CurrentFigureCol = 0;
-        static Random Random = new Random();
 
 
         static void Main(string[] args)
         {
             var musicPlayer = new MusicPlayer();
             var scoreMenager = new ScoreMenager("score.txt");
+            var tetrisGame = new TetrisGame(TetrisRows, TetrisCols);
             //musicPlayer.PlayMusic();
             Console.Title = "Tetris-v1.0";
             Console.WindowHeight = GameRows + 1;
@@ -76,12 +25,10 @@ namespace Tetris
             Console.BufferHeight = GameRows + 1;
             Console.BufferWidth = GameCols + 1;
             Console.CursorVisible = false;
-            CurrentFigure = TetrisFigures[Random.Next(0, TetrisFigures.Count - 1)];
-            
 
             while (true)
             {
-                Frame++;
+                tetrisGame.Frame++;
 
                 if (Console.KeyAvailable)
                 {
@@ -93,54 +40,46 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
                     {
-                        if (IsSave(CurrentFigure, CurrentFigureRow, CurrentFigureCol + 1))
+                        if (tetrisGame.IsSave(tetrisGame.CurrentFigure, tetrisGame.CurrentFigureRow, tetrisGame.CurrentFigureCol + 1))
                         {
-                            CurrentFigureCol++;
+                            tetrisGame.CurrentFigureCol++;
                         }
 
                     }
                     if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow)
                     {
-                        if (IsSave(CurrentFigure, CurrentFigureRow, CurrentFigureCol - 1))
+                        if (tetrisGame.IsSave(tetrisGame.CurrentFigure, tetrisGame.CurrentFigureRow, tetrisGame.CurrentFigureCol - 1))
                         {
-                            CurrentFigureCol--;
+                            tetrisGame.CurrentFigureCol--;
                         }
 
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
-                        if (CurrentFigureRow + CurrentFigure.GetLength(0) < TetrisRows - 1)
+                        if (tetrisGame.CurrentFigureRow + tetrisGame.CurrentFigure.GetLength(0) < TetrisRows - 1)
                         {
                             scoreMenager.AddScore(0);
-                            Frame = 1;
-                            CurrentFigureRow++;
+                            tetrisGame.Frame = 1;
+                            tetrisGame.CurrentFigureRow++;
                         }
                     }
                     if (key.Key == ConsoleKey.Spacebar)
                     {
-                        CurrentFigure = RotateFigure(CurrentFigure);
+                        tetrisGame.CurrentFigure = RotateFigure(tetrisGame);
                     }
                 }
 
-                if (Frame % (FramesPerSecond - Level) == 0)
+                tetrisGame.UpdateState();
+
+                if (tetrisGame.Collision())
                 {
-                    Frame = 1;
-                    CurrentFigureRow++;
-                }
-                if (Collision())
-                {
-                    AddCurrentFigureToTetrisFiels();
-                    int lines = CheckForFullLines();
+                    tetrisGame.AddCurrentFigureToTetrisFiels();
+                    int lines = tetrisGame.CheckForFullLines();
                     scoreMenager.AddScore(lines);
-                    LinesCleared += lines;
-                    if (LinesCleared >= LinesToLevel)
-                    {
-                        Level++;
-                        LinesCleared = LinesCleared - LinesToLevel;
+                    tetrisGame.UpdateLevel(lines);
+                    tetrisGame.GenerateRandomFigure();
 
-                    }
-                    ResetFigure();
-                    if (Collision())
+                    if (tetrisGame.Collision())
                     {
                         GameOver(scoreMenager);
                     }
@@ -149,102 +88,42 @@ namespace Tetris
 
 
                 DrawBorder();
-                DrawGameInfo(scoreMenager.Score, scoreMenager.HighScore);
-                DrawCurrentFigure();
-                DrawTerrisField();
+                DrawGameInfo(scoreMenager.Score, scoreMenager.HighScore, tetrisGame.Level);
+                DrawCurrentFigure(tetrisGame.CurrentFigure, tetrisGame.CurrentFigureRow, tetrisGame.CurrentFigureCol);
+                DrawTerrisField(tetrisGame.TetrisField);
 
                 Thread.Sleep(40);
 
             }
 
         }
-
-        
-
-        private static bool[,] RotateFigure(bool[,] currentFigure)
+        private static bool[,] RotateFigure(TetrisGame game)
         {
-            var rotatedFigure = new bool[currentFigure.GetLength(1), currentFigure.GetLength(0)];
+            var rotatedFigure = new bool[game.CurrentFigure.GetLength(1), game.CurrentFigure.GetLength(0)];
 
-            for (int row = 0; row < currentFigure.GetLength(0); row++)
+            for (int row = 0; row < game.CurrentFigure.GetLength(0); row++)
             {
-                for (int col = 0; col < CurrentFigure.GetLength(1); col++)
+                for (int col = 0; col < game.CurrentFigure.GetLength(1); col++)
                 {
-                    rotatedFigure[col, currentFigure.GetLength(0) - row - 1] = currentFigure[row, col];
+                    rotatedFigure[col, game.CurrentFigure.GetLength(0) - row - 1] = game.CurrentFigure[row, col];
                 }
             }
 
-            int rightBorder = rotatedFigure.GetLength(1) + CurrentFigureCol;
+            int rightBorder = rotatedFigure.GetLength(1) + game.CurrentFigureCol;
             if (rightBorder > TetrisCols)
             {
 
-                CurrentFigureCol -= rightBorder - TetrisCols;
+                game.CurrentFigureCol -= rightBorder - TetrisCols;
 
 
             }
 
-            if (IsSave(rotatedFigure, CurrentFigureRow, CurrentFigureCol))
+            if (game.IsSave(rotatedFigure, game.CurrentFigureRow, game.CurrentFigureCol))
             {
                 return rotatedFigure;
 
             }
-            return currentFigure;
-        }
-
-        private static bool IsSave(bool[,] figure, int row, int col)
-        {
-            if (col < 0)
-            {
-                return false;
-            }
-            if (col + figure.GetLength(1) > TetrisCols)
-            {
-                return false;
-            }
-
-            for (int r = 0; r < figure.GetLength(0); r++)
-            {
-                for (int c = 0; c < figure.GetLength(1); c++)
-                {
-                    if (figure[r, c] && TetrisField[row + r, col + c])
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        private static int CheckForFullLines()
-        {
-            int linesCount = 0;
-
-            for (int row = 0; row < TetrisField.GetLength(0); row++)
-            {
-                bool isFullLine = true;
-                for (int col = 0; col < TetrisField.GetLength(1); col++)
-                {
-                    if (TetrisField[row, col] == false)
-                    {
-                        isFullLine = false;
-                    }
-                }
-
-                if (isFullLine)
-                {
-                    linesCount++;
-
-                    for (int r = row; r >= 1; r--)
-                    {
-                        for (int c = 0; c < TetrisField.GetLength(1); c++)
-                        {
-                            TetrisField[r, c] = TetrisField[r - 1, c];
-                        }
-                    }
-                }
-            }
-
-            return linesCount;
+            return game.CurrentFigure;
         }
 
         private static void GameOver(ScoreMenager scoreMenager)
@@ -264,60 +143,13 @@ namespace Tetris
             Environment.Exit(0);
         }
 
-        private static void ResetFigure()
+        private static void DrawTerrisField(bool[,] tetrisField)
         {
-            var figure = TetrisFigures[Random.Next(0, TetrisFigures.Count)];
-            CurrentFigureRow = 0;
-            CurrentFigureCol = 0;
-            CurrentFigure = figure;
-        }
-
-        private static void AddCurrentFigureToTetrisFiels()
-        {
-            for (int row = 0; row < CurrentFigure.GetLength(0); row++)
+            for (int row = 0; row < tetrisField.GetLongLength(0); row++)
             {
-                for (int col = 0; col < CurrentFigure.GetLongLength(1); col++)
+                for (int col = 0; col < tetrisField.GetLongLength(1); col++)
                 {
-                    if (CurrentFigure[row, col])
-                    {
-                        TetrisField[row + CurrentFigureRow, col + CurrentFigureCol] = true;
-                    }
-                }
-            }
-        }
-
-        private static bool Collision()
-        {
-            if (CurrentFigureRow + CurrentFigure.GetLength(0) >= TetrisRows)
-            {
-                return true;
-            }
-            for (int row = 0; row < CurrentFigure.GetLength(0); row++)
-            {
-                bool hasCollision = false;
-                for (int col = 0; col < CurrentFigure.GetLength(1); col++)
-                {
-                    if (CurrentFigure[row, col])
-                    {
-                        hasCollision = TetrisField[CurrentFigureRow + row + 1, CurrentFigureCol + col];
-                    }
-                    if (hasCollision)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private static void DrawTerrisField()
-        {
-            for (int row = 0; row < TetrisField.GetLongLength(0); row++)
-            {
-                for (int col = 0; col < TetrisField.GetLongLength(1); col++)
-                {
-                    if (TetrisField[row, col])
+                    if (tetrisField[row, col])
                     {
                         Draw("*", row + 1, col + 1);
                     }
@@ -325,21 +157,21 @@ namespace Tetris
             }
         }
 
-        private static void DrawCurrentFigure()
+        private static void DrawCurrentFigure(bool[,] currentFigure, int currentFigureRow, int currentFigureCol)
         {
-            for (int r = 0; r < CurrentFigure.GetLength(0); r++)
+            for (int r = 0; r < currentFigure.GetLength(0); r++)
             {
-                for (int c = 0; c < CurrentFigure.GetLength(1); c++)
+                for (int c = 0; c < currentFigure.GetLength(1); c++)
                 {
-                    if (CurrentFigure[r, c])
+                    if (currentFigure[r, c])
                     {
-                        Draw("*", r + CurrentFigureRow + 1, c + CurrentFigureCol + 1, ConsoleColor.Yellow);
+                        Draw("*", r + currentFigureRow + 1, c + currentFigureCol + 1, ConsoleColor.Yellow);
                     }
                 }
             }
         }
 
-        private static void DrawGameInfo(int score, int highScore)
+        private static void DrawGameInfo(int score, int highScore, int level)
         {
             Draw("Score:", 2, TetrisCols + 3, ConsoleColor.DarkCyan);
             Draw(score.ToString(), 3, TetrisCols + 3, ConsoleColor.DarkCyan);
@@ -348,7 +180,7 @@ namespace Tetris
             Draw(highScore.ToString(), 6, TetrisCols + 3, ConsoleColor.DarkCyan);
 
             Draw("Level:", 8, TetrisCols + 3, ConsoleColor.DarkCyan);
-            Draw(Level.ToString(), 9, TetrisCols + 3, ConsoleColor.DarkCyan);
+            Draw(level.ToString(), 9, TetrisCols + 3, ConsoleColor.DarkCyan);
 
 
         }
