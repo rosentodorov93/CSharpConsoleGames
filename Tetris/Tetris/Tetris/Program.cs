@@ -56,7 +56,7 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
                     {
-                        if (tetrisGame.CurrentFigureRow + tetrisGame.CurrentFigure.GetLength(0) < TetrisRows - 1)
+                        if (tetrisGame.CurrentFigureRow + tetrisGame.CurrentFigure.Height < TetrisRows - 1)
                         {
                             scoreMenager.AddScore(0);
                             tetrisGame.Frame = 1;
@@ -65,7 +65,11 @@ namespace Tetris
                     }
                     if (key.Key == ConsoleKey.Spacebar)
                     {
-                        tetrisGame.CurrentFigure = RotateFigure(tetrisGame);
+                        var rotatedFigure = tetrisGame.CurrentFigure.RotateFigure();
+                        if (tetrisGame.IsRotateSave(rotatedFigure))
+                        {
+                            tetrisGame.CurrentFigure = rotatedFigure;
+                        }
                     }
                 }
 
@@ -89,7 +93,7 @@ namespace Tetris
 
                 DrawBorder();
                 DrawGameInfo(scoreMenager.Score, scoreMenager.HighScore, tetrisGame.Level);
-                DrawCurrentFigure(tetrisGame.CurrentFigure, tetrisGame.CurrentFigureRow, tetrisGame.CurrentFigureCol);
+                DrawCurrentFigure(tetrisGame.CurrentFigure.Body, tetrisGame.CurrentFigureRow, tetrisGame.CurrentFigureCol);
                 DrawTerrisField(tetrisGame.TetrisField);
 
                 Thread.Sleep(40);
@@ -97,35 +101,6 @@ namespace Tetris
             }
 
         }
-        private static bool[,] RotateFigure(TetrisGame game)
-        {
-            var rotatedFigure = new bool[game.CurrentFigure.GetLength(1), game.CurrentFigure.GetLength(0)];
-
-            for (int row = 0; row < game.CurrentFigure.GetLength(0); row++)
-            {
-                for (int col = 0; col < game.CurrentFigure.GetLength(1); col++)
-                {
-                    rotatedFigure[col, game.CurrentFigure.GetLength(0) - row - 1] = game.CurrentFigure[row, col];
-                }
-            }
-
-            int rightBorder = rotatedFigure.GetLength(1) + game.CurrentFigureCol;
-            if (rightBorder > TetrisCols)
-            {
-
-                game.CurrentFigureCol -= rightBorder - TetrisCols;
-
-
-            }
-
-            if (game.IsSave(rotatedFigure, game.CurrentFigureRow, game.CurrentFigureCol))
-            {
-                return rotatedFigure;
-
-            }
-            return game.CurrentFigure;
-        }
-
         private static void GameOver(ScoreMenager scoreMenager)
         {
 

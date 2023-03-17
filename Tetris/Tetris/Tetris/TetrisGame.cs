@@ -8,42 +8,42 @@ namespace Tetris
 {
     public class TetrisGame
     {
-        private readonly List<bool[,]> TetrisFigures = new List<bool[,]>()
+        private readonly List<Tetronino> TetrisFigures = new List<Tetronino>()
         {
-            new bool[,]
+            new Tetronino(new bool[,]
             {
                 {true, true,true,true}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {true, true,},
                 {true, true,}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {false, true,false},
                 {true, true,true}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {true, true,false},
                 {false, true,true}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {false, true,true},
                 {true, true,false}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {true, false,false},
                 {true, true,true}
-            },
-            new bool[,]
+            }),
+            new Tetronino(new bool[,]
             {
                 {false, false,true},
                 {true, true,true}
-            }
+            })
         };
         private Random random;
 
@@ -71,7 +71,7 @@ namespace Tetris
         public int FramesPerSecond { get; private set; }
         public int LinesCleared { get; private set; }
         public int Level { get; private set; }
-        public bool[,] CurrentFigure { get; set; }
+        public Tetronino CurrentFigure { get; set; }
         public int CurrentFigureRow { get; set; }
         public int CurrentFigureCol { get; set; }
 
@@ -103,11 +103,11 @@ namespace Tetris
 
         public void AddCurrentFigureToTetrisFiels()
         {
-            for (int row = 0; row < this.CurrentFigure.GetLength(0); row++)
+            for (int row = 0; row < this.CurrentFigure.Height; row++)
             {
-                for (int col = 0; col < this.CurrentFigure.GetLongLength(1); col++)
+                for (int col = 0; col < this.CurrentFigure.Width; col++)
                 {
-                    if (this.CurrentFigure[row, col])
+                    if (this.CurrentFigure.Body[row, col])
                     {
                         this.TetrisField[row + this.CurrentFigureRow, col + this.CurrentFigureCol] = true;
                     }
@@ -149,16 +149,16 @@ namespace Tetris
 
         public  bool Collision()
         {
-            if (this.CurrentFigureRow + this.CurrentFigure.GetLength(0) >= TetrisRows)
+            if (this.CurrentFigureRow + this.CurrentFigure.Height >= TetrisRows)
             {
                 return true;
             }
-            for (int row = 0; row < this.CurrentFigure.GetLength(0); row++)
+            for (int row = 0; row < this.CurrentFigure.Height; row++)
             {
                 bool hasCollision = false;
-                for (int col = 0; col < this.CurrentFigure.GetLength(1); col++)
+                for (int col = 0; col < this.CurrentFigure.Width; col++)
                 {
-                    if (this.CurrentFigure[row, col])
+                    if (this.CurrentFigure.Body[row, col])
                     {
                         hasCollision = this.TetrisField[this.CurrentFigureRow + row + 1, this.CurrentFigureCol + col];
                     }
@@ -172,22 +172,22 @@ namespace Tetris
             return false;
         }
 
-        public  bool IsSave(bool[,] figure, int row, int col)
+        public  bool IsSave(Tetronino figure, int row, int col)
         {
             if (col < 0)
             {
                 return false;
             }
-            if (col + figure.GetLength(1) > this.TetrisCols)
+            if (col + figure.Width > this.TetrisCols)
             {
                 return false;
             }
 
-            for (int r = 0; r < figure.GetLength(0); r++)
+            for (int r = 0; r < figure.Height; r++)
             {
-                for (int c = 0; c < figure.GetLength(1); c++)
+                for (int c = 0; c < figure.Width; c++)
                 {
-                    if (figure[r, c] && this.TetrisField[row + r, col + c])
+                    if (figure.Body[r, c] && this.TetrisField[row + r, col + c])
                     {
                         return false;
                     }
@@ -195,6 +195,26 @@ namespace Tetris
             }
 
             return true;
+        }
+
+        public bool IsRotateSave(Tetronino rotatedFigure)
+        {
+            int rightBorder = rotatedFigure.Width + this.CurrentFigureCol;
+            if (rightBorder > TetrisCols)
+            {
+
+                this.CurrentFigureCol -= rightBorder - this.TetrisCols;
+
+
+            }
+
+            if (this.IsSave(rotatedFigure, this.CurrentFigureRow, this.CurrentFigureCol))
+            {
+                return true;
+
+            }
+
+            return false;
         }
     }
 }
