@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tetris
+﻿namespace Tetris
 {
     public class TetrisConsoleDrawer
     {
@@ -32,7 +26,7 @@ namespace Tetris
             Console.CursorVisible = false;
         }
 
-        public void DrawUi(TetrisGame game, ScoreMenager score)
+        public void DrawUi(ITetrisGame game, ScoreMenager score)
         {
             this.DrawBorder();
             this.DrawGameInfo(score.Score, score.HighScore, game.Level);

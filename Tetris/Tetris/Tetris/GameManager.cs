@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tetris
+﻿namespace Tetris
 {
     public class GameManager
     {
         private ScoreMenager scoreMenager;
-        private TetrisGame tetrisGame;
+        private ITetrisGame tetrisGame;
         private TetrisConsoleDrawer tetrisDrawer;
-        private TetrisConsoleInputManager inputManager;
+        private IInputManager inputManager;
 
 
-        public GameManager(int tetrisRows, int tetrisCols)
+        public GameManager(ITetrisGame tetrisGame, IInputManager inputManager, ScoreMenager scoreMenager, TetrisConsoleDrawer tetrisDrawer)
         {
-            this.scoreMenager = new ScoreMenager("score.txt");
-            this.tetrisGame = new TetrisGame(tetrisRows, tetrisCols);
-            this.tetrisDrawer = new TetrisConsoleDrawer(tetrisRows, tetrisCols);
-            this.inputManager = new TetrisConsoleInputManager();
+            this.scoreMenager = scoreMenager;
+            this.inputManager = inputManager;
+            this.tetrisGame = tetrisGame;
+            this.tetrisDrawer = tetrisDrawer;
         }
 
         public void MainLoop()

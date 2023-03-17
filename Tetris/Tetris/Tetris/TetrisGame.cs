@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tetris
+﻿namespace Tetris
 {
-    public class TetrisGame
+    public class TetrisGame : ITetrisGame
     {
         private readonly List<Tetronino> TetrisFigures = new List<Tetronino>()
         {
@@ -115,7 +109,7 @@ namespace Tetris
             }
         }
 
-        public  int CheckForFullLines()
+        public int CheckForFullLines()
         {
             int linesCount = 0;
 
@@ -147,7 +141,7 @@ namespace Tetris
             return linesCount;
         }
 
-        public  bool Collision()
+        public bool Collision()
         {
             if (this.CurrentFigureRow + this.CurrentFigure.Height >= TetrisRows)
             {
@@ -172,7 +166,7 @@ namespace Tetris
             return false;
         }
 
-        public  bool IsSave(Tetronino figure, int row, int col)
+        public bool IsSave(Tetronino figure, int row, int col)
         {
             if (col < 0)
             {

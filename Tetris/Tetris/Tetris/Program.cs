@@ -4,8 +4,6 @@ namespace Tetris
 {
     internal class Program
     {
-
-
         static void Main(string[] args)
         {
             int tetrisRows = 20;
@@ -14,7 +12,11 @@ namespace Tetris
             var musicPlayer = new MusicPlayer();
             musicPlayer.PlayMusic();
 
-            var tetrisGame = new GameManager(tetrisRows, tetrisCols);
+            var tetrisGame = new GameManager(
+                new TetrisGame(tetrisRows,tetrisCols),
+                new TetrisConsoleInputManager(),
+                new ScoreMenager("score.txt"),
+                new TetrisConsoleDrawer(tetrisRows,tetrisCols));
             tetrisGame.MainLoop();
 
         }

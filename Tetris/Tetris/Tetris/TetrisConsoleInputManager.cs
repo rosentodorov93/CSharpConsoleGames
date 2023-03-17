@@ -1,6 +1,6 @@
 ﻿namespace Tetris
 {
-    public class TetrisConsoleInputManager
+    public class TetrisConsoleInputManager : IInputManager
     {
         public TetrisInput GetInput()
         {
