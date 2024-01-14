@@ -23,9 +23,12 @@ namespace Snake_Game
             snakeElements.Enqueue(new Position(2, 0));
         }
 
-        public void Move(Position newHead, Position food)
+        public void Move(Position direction)
         {
+            var oldHead = snakeElements.Last();
+            var newHead = new Position(oldHead.row + direction.row, oldHead.col + direction.col);
             snakeElements.Enqueue(newHead);
+            RemoveElement();
 
         }
 
@@ -35,6 +38,12 @@ namespace Snake_Game
             {
                 Draw(snakeElelemnt, '*');
             }
+        }
+
+        private void RemoveElement()
+        {
+            var elemntToRemove = snakeElements.Dequeue();
+            Draw(elemntToRemove, ' ');
         }
     }
 }
