@@ -1,6 +1,6 @@
 ﻿namespace Snake_Game
 {
-    abstract class Drawable
+    public abstract class Drawable
     {
         public void Draw(Position position, char symbol, ConsoleColor color = ConsoleColor.Yellow)
         {
