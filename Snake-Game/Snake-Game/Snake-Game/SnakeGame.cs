@@ -11,12 +11,16 @@ namespace Snake_Game
         private Snake snake;
         private InputManager inputManager;
         private Food food;
+        private int score;
+        private double speedLevel;
 
         public SnakeGame(Snake snake, InputManager inputManager, Food food)
         {
             this.snake = snake;
             this.inputManager = inputManager;
             this.food = food;
+            this.score = 0;
+            this.speedLevel = 110;
         }
 
         public void Start()
@@ -28,20 +32,53 @@ namespace Snake_Game
             {
                 var direction = inputManager.GetDirection();
 
-                snake.Move(direction);
+                var currentHeadPosition = snake.GetHead(direction);
+
+                var isPositionSafe = CheckBoudries(currentHeadPosition);
+                if (!isPositionSafe || snake.SnakeElelemnts.Contains(currentHeadPosition))
+                {
+                    GameOver();
+                    return;
+                }
+                else
+                {
+                    snake.Move(currentHeadPosition);
+                }
+
                 var isOnFood = snake.FeedCheck(food.Position.row, food.Position.col);
                 if (isOnFood)
                 {
                     food.GenerateFood(snake.SnakeElelemnts);
+                    score++;
+                    speedLevel -= 1;
                 }
                 else
                 {
                     snake.RemoveElement();
+                    speedLevel -= 0.1;
                 }
                 food.DrawFood();
                 snake.DrawSnake();
-                Thread.Sleep(120);
+                Thread.Sleep((int)this.speedLevel);
             }
+        }
+
+        private bool CheckBoudries(Position head)
+        {
+            if (head.row < 0 || head.col < 0 || head.col >= Console.WindowHeight || head.row >= Console.WindowWidth)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void GameOver()
+        {
+            Console.SetCursorPosition(0, 0);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Game Over!");
+            Console.WriteLine($"Your score is {this.score * 100}");
         }
     }
 }
