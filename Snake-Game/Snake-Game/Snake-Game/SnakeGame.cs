@@ -10,24 +10,37 @@ namespace Snake_Game
     {
         private Snake snake;
         private InputManager inputManager;
+        private Food food;
 
-        public SnakeGame(Snake snake, InputManager inputManager)
+        public SnakeGame(Snake snake, InputManager inputManager, Food food)
         {
             this.snake = snake;
             this.inputManager = inputManager;
+            this.food = food;
         }
 
         public void Start()
         {
+            Console.CursorVisible = false;
+            Console.BufferHeight = Console.WindowHeight;
+
             while (true)
             {
-                Console.CursorVisible = false;
-                Console.BufferHeight = Console.WindowHeight;
-
                 var direction = inputManager.GetDirection();
+
                 snake.Move(direction);
+                var isOnFood = snake.FeedCheck(food.Position.row, food.Position.col);
+                if (isOnFood)
+                {
+                    food.GenerateFood(snake.SnakeElelemnts);
+                }
+                else
+                {
+                    snake.RemoveElement();
+                }
+                food.DrawFood();
                 snake.DrawSnake();
-                Thread.Sleep(100);
+                Thread.Sleep(120);
             }
         }
     }

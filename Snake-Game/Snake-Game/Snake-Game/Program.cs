@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            var game = new SnakeGame(new Snake(), new InputManager());
+            var game = new SnakeGame(new Snake(), new InputManager(), new Food());
             game.Start();
         }
     }

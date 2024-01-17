@@ -16,6 +16,8 @@ namespace Snake_Game
             GetInitialSnake();
         }
 
+        public Queue<Position> SnakeElelemnts => this.snakeElements;
+
         private void GetInitialSnake()
         {
             snakeElements.Enqueue(new Position(0, 0));
@@ -28,8 +30,17 @@ namespace Snake_Game
             var oldHead = snakeElements.Last();
             var newHead = new Position(oldHead.row + direction.row, oldHead.col + direction.col);
             snakeElements.Enqueue(newHead);
-            RemoveElement();
 
+        }
+
+        public bool FeedCheck(int foodRow, int foodCol)
+        {
+            var snakeHead = snakeElements.Last();
+            if (snakeHead.row == foodRow && snakeHead.col == foodCol)
+            {
+                return true;
+            }
+            return false;
         }
 
         public void DrawSnake()
@@ -40,10 +51,12 @@ namespace Snake_Game
             }
         }
 
-        private void RemoveElement()
+        public void RemoveElement()
         {
             var elemntToRemove = snakeElements.Dequeue();
             Draw(elemntToRemove, ' ');
         }
+
+
     }
 }
