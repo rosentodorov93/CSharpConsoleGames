@@ -2,11 +2,10 @@
 {
     public class InputManager
     {
-        private Position defaultDirection;
-        private Position? currentDirection;
+        private Position currentDirection;
         public InputManager()
         {
-            this.defaultDirection = new Position(0, 1);
+            this.currentDirection = new Position(0, 1);
         }
         public Position GetDirection()
         {
@@ -14,32 +13,26 @@
             {
                 var input = Console.ReadKey();
 
-                if (input.Key == ConsoleKey.UpArrow)
+                if (input.Key == ConsoleKey.UpArrow && currentDirection.col != 1)
                 {
                     currentDirection = new Position(0, -1);
                 }
-                if (input.Key == ConsoleKey.DownArrow)
+                if (input.Key == ConsoleKey.DownArrow && currentDirection.col != -1)
                 {
                     currentDirection = new Position(0, 1);
                 }
-                if (input.Key == ConsoleKey.RightArrow)
+                if (input.Key == ConsoleKey.RightArrow && currentDirection.row != -1)
                 {
                     currentDirection = new Position(1, 0);
                 }
-                if (input.Key == ConsoleKey.LeftArrow)
+                if (input.Key == ConsoleKey.LeftArrow && currentDirection.row != 1)
                 {
                     currentDirection = new Position(-1, 0);
                 }
             }
 
-            if (currentDirection == null)
-            {
-                return defaultDirection;
-            }
-            else
-            {
-                return currentDirection;
-            }
+            return currentDirection;
+
         }
     }
 }
