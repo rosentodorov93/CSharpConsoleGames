@@ -21,16 +21,25 @@ namespace Snake_Game
         private void GetInitialSnake()
         {
             snakeElements.Enqueue(new Position(0, 0));
-            snakeElements.Enqueue(new Position(1, 0));
-            snakeElements.Enqueue(new Position(2, 0));
+            snakeElements.Enqueue(new Position(0, 1));
+            snakeElements.Enqueue(new Position(0, 2));
+            snakeElements.Enqueue(new Position(0, 3));
+            snakeElements.Enqueue(new Position(0, 4));
+            snakeElements.Enqueue(new Position(0, 5));
+            snakeElements.Enqueue(new Position(0, 6));
         }
 
-        public void Move(Position direction)
+        public Position GetHead(Position direction)
         {
             var oldHead = snakeElements.Last();
             var newHead = new Position(oldHead.row + direction.row, oldHead.col + direction.col);
-            snakeElements.Enqueue(newHead);
 
+            return newHead;
+        }
+
+        public void Move(Position position)
+        {
+            snakeElements.Enqueue(position);
         }
 
         public bool FeedCheck(int foodRow, int foodCol)
